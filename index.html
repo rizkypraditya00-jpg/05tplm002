@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABLONPRO - Kasir Sablon Baju Custom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        space: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f5ff',
+                            100: '#e0eafd',
+                            200: '#c7daf8',
+                            300: '#a1c2f2',
+                            400: '#72a0ea',
+                            500: '#3b82f6', // Indigo-blue main
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        dark: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Print styling for elegant receipts */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #receipt-print-area, #receipt-print-area * {
+                visibility: visible;
+            }
+            #receipt-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 80mm; /* Thermal paper size */
+                font-size: 12px;
+                color: #000;
+                background: #fff;
+                padding: 10px;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden text-slate-800">
+
+    <header class="bg-slate-900 text-white shadow-md flex-shrink-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-primary-500 text-white p-2 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21m0 0l-.813-5.096L3 15.187m6 5.813a2.25 2.25 0 01-1.072-.256l-5.322-3.193a2.25 2.25 0 01-.884-2.812l2.404-5.34a2.25 2.25 0 013.12-1.072l5.322 3.193a2.25 2.25 0 011.072 2.812l-2.404 5.34a2.25 2.25 0 01-3.12 1.072zM19.5 3.75a2.25 2.25 0 00-3.375-1.948L11.25 4.875a2.25 2.25 0 00-1.072 2.812l1.625 3.61c.148.328.312.646.492.952m7.205-8.499l3.193 5.322a2.25 2.25 0 01-.884 2.812l-5.34 2.404a2.25 2.25 0 01-2.812-.884l-1.625-3.61a2.247 2.247 0 01-.256-1.072l1.948-3.375a2.25 2.25 0 012.812-1.072z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-space font-bold text-lg tracking-wider">SABLON<span class="text-primary-400">PRO</span></h1>
+                    <p class="text-[10px] text-slate-400 font-medium">Kustomisasi & Kasir Digital Baju</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <!-- Navigation Tabs -->
+                <button onclick="switchTab('pos')" id="tab-btn-pos" class="tab-btn active px-4 py-2 rounded-lg text-sm font-semibold bg-primary-600 text-white flex items-center gap-2 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <span>Kasir POS</span>
+                </button>
+                <button onclick="switchTab('history')" id="tab-btn-history" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    <span>Riwayat Transaksi</span>
+                </button>
+                <button onclick="switchTab('settings')" id="tab-btn-settings" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>Pengaturan Harga</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div id="toast-box" class="fixed top-5 right-5 z-50 transform translate-y-[-150%] transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border-l-4 border-primary-500">
+            <span id="toast-icon" class="text-success">✔</span>
+            <span id="toast-text" class="text-sm font-medium">Notifikasi berhasil muncul!</span>
+        </div>
+    </div>
+
+    <main class="flex-1 overflow-hidden flex flex-col">
+        
+        <!-- ================= SECTION 1: POS WORKSPACE ================= -->
+        <div id="section-pos" class="flex-1 flex overflow-hidden flex-col lg:flex-row">
+            
+            <!-- Left Panel: Customizer Options -->
+            <div class="w-full lg:w-3/5 p-4 lg:p-6 overflow-y-auto space-y-6 flex-shrink-0 border-r border-slate-200 bg-slate-50">
+                
+                <!-- Quick Dashboard Analytics Header -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                        <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                            💰
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Omset Hari Ini</p>
+                            <p id="stat-revenue" class="text-sm font-bold text-slate-800">Rp 0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                        <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                            👕
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Pcs Terjual</p>
+                            <p id="stat-sold" class="text-sm font-bold text-slate-800">0 Pcs</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                        <div class="p-2 bg-violet-50 text-violet-600 rounded-lg">
+                            🧾
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Transaksi</p>
+                            <p id="stat-transactions" class="text-sm font-bold text-slate-800">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Base Garment Settings -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-primary-100 text-primary-600 text-xs font-bold px-2.5 py-1 rounded-full">1</span>
+                        <h2 class="font-bold text-slate-800 text-base">Pilih Produk & Ukuran Baju</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Garment Type Selection -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Jenis & Bahan Baju</label>
+                            <select id="input-garment-type" onchange="calculateCurrentItemPrice()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-primary-500 outline-none transition-all">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                        
+                        <!-- Size Selection -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Ukuran Baju (S - XXXL)</label>
+                            <div class="grid grid-cols-6 gap-1.5" id="size-selector-container">
+                                <!-- Sizes list as buttons -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Warna Kaos</label>
+                        <div class="flex flex-wrap gap-2" id="color-selector-container">
+                            <!-- Populated with color pills -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Custom Sablon Options (Paper Sizes) -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-primary-100 text-primary-600 text-xs font-bold px-2.5 py-1 rounded-full">2</span>
+                        <h2 class="font-bold text-slate-800 text-base">Konfigurasi Sablon (Ukuran Kertas)</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Paper Size Selector -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Ukuran Desain Sablon</label>
+                            <div class="space-y-2.5" id="paper-sizes-container">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Side Print and Notes -->
+                        <div class="space-y-4">
+                            <!-- Printing Side Options -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Sisi Sablon</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button onclick="setPrintSide('depan')" id="btn-side-depan" class="btn-side py-3 px-2 border-2 rounded-xl text-center font-bold text-xs transition-all flex flex-col items-center gap-1">
+                                        <span>👕 Depan</span>
+                                        <span class="text-[10px] text-slate-400 font-normal">Sisi Utama</span>
+                                    </button>
+                                    <button onclick="setPrintSide('belakang')" id="btn-side-belakang" class="btn-side py-3 px-2 border-2 rounded-xl text-center font-bold text-xs transition-all flex flex-col items-center gap-1">
+                                        <span>👕 Belakang</span>
+                                        <span class="text-[10px] text-slate-400 font-normal">Sisi Saja</span>
+                                    </button>
+                                    <button onclick="setPrintSide('kedua')" id="btn-side-kedua" class="btn-side py-3 px-2 border-2 rounded-xl text-center font-bold text-xs transition-all flex flex-col items-center gap-1">
+                                        <span>👕 Depan+Blk</span>
+                                        <span class="text-[10px] text-primary-500 font-semibold">+ Biaya Extra</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Custom Notes / Design Name -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Nama File / Catatan Desain</label>
+                                <input type="text" id="input-design-note" placeholder="Contoh: Logo Depan, A3 Belakang" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:ring-2 focus:ring-primary-500 outline-none transition-all">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Subtotal Desain Ini</span>
+                            <span class="px-2 py-0.5 text-[9px] font-bold bg-primary-500 text-white rounded">Est. Realtime</span>
+                        </div>
+                        <div class="flex items-baseline space-x-2 mt-1">
+                            <span id="current-price-label" class="text-2xl font-black text-white font-space">Rp 0</span>
+                            <span id="breakdown-price-label" class="text-xs text-slate-400"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center bg-slate-700/50 rounded-xl p-1 border border-slate-700">
+                            <button onclick="changeCurrentQty(-1)" class="w-10 h-10 rounded-lg hover:bg-slate-700 flex items-center justify-center font-bold text-lg text-slate-300 transition-colors">-</button>
+                            <span id="current-qty" class="w-12 text-center font-bold font-space text-base text-white">1</span>
+                            <button onclick="changeCurrentQty(1)" class="w-10 h-10 rounded-lg hover:bg-slate-700 flex items-center justify-center font-bold text-lg text-slate-300 transition-colors">+</button>
+                        </div>
+                        <button onclick="addToCart()" class="flex-1 md:flex-none bg-primary-500 hover:bg-primary-600 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-primary-500/30 flex items-center justify-center space-x-2 transition-all transform hover:-translate-y-0.5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Tambahkan</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="w-full lg:w-2/5 p-4 lg:p-6 bg-white overflow-y-auto flex flex-col justify-between shadow-2xl relative z-0">
+                
+                <div class="space-y-4 flex-1">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center space-x-2">
+                            <h2 class="font-bold text-slate-800 text-lg">Detail Keranjang</h2>
+                            <span id="cart-counter" class="bg-primary-100 text-primary-700 text-xs font-bold px-2 py-0.5 rounded-full">0 Item</span>
+                        </div>
+                        <button onclick="clearCart()" class="text-xs text-danger font-semibold hover:underline flex items-center gap-1">
+                            🗑 Kosongkan
+                        </button>
+                    </div>
+
+                    <!-- Cart List Container -->
+                    <div id="cart-list" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                        <!-- If Empty Cart -->
+                        <div id="cart-empty-state" class="text-center py-12 text-slate-400 space-y-2">
+                            <p class="text-3xl">🧺</p>
+                            <p class="text-sm font-medium">Keranjang masih kosong.</p>
+                            <p class="text-xs text-slate-400">Silakan konfigurasikan pesanan kaos sablon di panel kiri.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-4 mt-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <!-- Discount Selector -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Diskon (%)</label>
+                            <input type="number" id="input-discount" value="0" min="0" max="100" oninput="calculateCartTotals()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:ring-1 focus:ring-primary-500 outline-none transition-all font-space">
+                        </div>
+                        <!-- Tax Selector -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Pajak / PPN (%)</label>
+                            <input type="number" id="input-tax" value="11" min="0" max="100" oninput="calculateCartTotals()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:ring-1 focus:ring-primary-500 outline-none transition-all font-space">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="flex justify-between text-xs text-slate-500 font-medium">
+                            <span>Subtotal Belanja:</span>
+                            <span id="cart-subtotal" class="font-space">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 font-medium">
+                            <span>Diskon Potongan:</span>
+                            <span id="cart-discount-val" class="text-red-500 font-space">- Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 font-medium">
+                            <span>Pajak (PPN):</span>
+                            <span id="cart-tax-val" class="font-space">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-200/50">
+                            <span>TOTAL TAGIHAN:</span>
+                            <span id="cart-grandtotal" class="text-primary-600 font-space text-lg">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Information -->
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide">Metode Pembayaran</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setPaymentMethod('cash')" id="pay-btn-cash" class="pay-btn py-2 border rounded-xl text-center text-xs font-bold flex flex-col items-center gap-1">
+                                💵 Cash
+                            </button>
+                            <button onclick="setPaymentMethod('qris')" id="pay-btn-qris" class="pay-btn py-2 border rounded-xl text-center text-xs font-bold flex flex-col items-center gap-1">
+                                📱 QRIS
+                            </button>
+                            <button onclick="setPaymentMethod('transfer')" id="pay-btn-transfer" class="pay-btn py-2 border rounded-xl text-center text-xs font-bold flex flex-col items-center gap-1">
+                                🏦 Transfer
+                            </button>
+                        </div>
+
+                        <!-- Cash Change Calculator (Visible when cash selected) -->
+                        <div id="cash-payment-panel" class="space-y-2 transition-all">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-xs font-semibold text-slate-500">Nominal Tunai yang Diterima</label>
+                                <span class="text-[10px] text-slate-400 font-medium italic">Klik tombol instan</span>
+                            </div>
+                            <div class="flex gap-1 mb-2">
+                                <button onclick="quickCash(50000)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold py-1 rounded">50K</button>
+                                <button onclick="quickCash(100000)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold py-1 rounded">100K</button>
+                                <button onclick="quickCash(150000)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold py-1 rounded">150K</button>
+                                <button onclick="quickCash(200000)" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold py-1 rounded">200K</button>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-bold text-sm">Rp</span>
+                                <input type="number" id="input-cash-amount" placeholder="Contoh: 100000" oninput="calculateChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-slate-700 font-bold focus:ring-2 focus:ring-primary-500 outline-none transition-all font-space">
+                            </div>
+                            <div class="flex justify-between items-center text-sm font-semibold p-2 bg-slate-100 rounded-lg">
+                                <span class="text-slate-500">Uang Kembalian:</span>
+                                <span id="payment-change" class="text-primary-600 font-bold font-space">Rp 0</span>
+                            </div>
+                        </div>
+
+                        <!-- Customer Details -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="input-customer-name" placeholder="Nama Pelanggan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:ring-1 focus:ring-primary-500 outline-none transition-all">
+                            <input type="text" id="input-customer-phone" placeholder="No. Telepon / WhatsApp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:ring-1 focus:ring-primary-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Process Transaction Button -->
+                    <button onclick="processTransaction()" class="w-full bg-success text-white font-black py-4 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 hover:brightness-105 active:scale-[0.99] transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span>BAYAR & CETAK STRUK</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= SECTION 2: TRANSACTION HISTORY ================= -->
+        <div id="section-history" class="hidden flex-1 p-6 overflow-y-auto space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 font-space tracking-wide">Riwayat Transaksi Sablon</h2>
+                    <p class="text-sm text-slate-500">Kelola dan lihat data penjualan yang telah tersimpan di sistem.</p>
+                </div>
+                <button onclick="clearHistory()" class="bg-red-50 text-danger border border-red-200 hover:bg-red-100 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all">
+                    🗑 Hapus Semua Riwayat Transaksi
+                </button>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-wide">
+                                <th class="p-4">Invoice ID</th>
+                                <th class="p-4">Tanggal / Waktu</th>
+                                <th class="p-4">Nama Pelanggan</th>
+                                <th class="p-4">Detail Kustom Sablon</th>
+                                <th class="p-4">Metode</th>
+                                <th class="p-4 text-right">Diskon & Pajak</th>
+                                <th class="p-4 text-right">Grand Total</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- Populated with Javascript -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Empty State Table -->
+                <div id="history-empty" class="hidden text-center py-16 text-slate-400 space-y-3">
+                    <p class="text-4xl">📄</p>
+                    <p class="text-base font-semibold">Belum ada transaksi terekam.</p>
+                    <p class="text-xs">Silakan lakukan penjualan pertama di halaman Kasir POS.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 3: SYSTEM SETTINGS ================= -->
+        <div id="section-settings" class="hidden flex-1 p-6 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900 font-space tracking-wide">Pengaturan Harga Produk</h2>
+                <p class="text-sm text-slate-500">Sesuaikan harga dasar kaos polos serta tarif sablon per dimensi ukuran kertas.</p>
+            </div>
+
+            <!-- Settings Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Shirt Base Cost Editor -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-2 border-b border-slate-100 pb-2">
+                        <span class="text-lg">👕</span>
+                        <h3 class="font-bold text-slate-800 text-sm">Harga Dasar Baju Polos</h3>
+                    </div>
+                    <div class="space-y-3" id="settings-garments-list">
+                        <!-- Populated dynamic inputs -->
+                    </div>
+                </div>
+
+                <!-- Print Cost per Paper Size Editor -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-2 border-b border-slate-100 pb-2">
+                        <span class="text-lg">📐</span>
+                        <h3 class="font-bold text-slate-800 text-sm">Tarif Sablon (Ukuran Kertas)</h3>
+                    </div>
+                    <div class="space-y-3" id="settings-paper-list">
+                        <!-- Populated dynamic inputs -->
+                    </div>
+                    <p class="text-xs text-amber-600 bg-amber-50 p-2.5 rounded-lg border border-amber-200 font-medium leading-relaxed">
+                        ⚠️ <strong>Catatan Sisi:</strong> Biaya sablon di atas dihitung per sisi. Jika memesan sablon Depan & Belakang, biaya cetak akan ditambah biaya tambahan custom sebesar 100% dari harga cetak (Dua sisi).
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-slate-100 rounded-2xl p-5 border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-xs text-slate-500">
+                    <p class="font-bold text-slate-700 mb-0.5">Sistem Penyimpanan Lokal Aktif</p>
+                    <p>Semua kustomisasi harga akan tersimpan langsung di browser komputer kasir ini.</p>
+                </div>
+                <div class="flex space-x-2 w-full md:w-auto">
+                    <button onclick="resetSettingsToDefault()" class="flex-1 md:flex-none px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition-colors">
+                        🔄 Reset Default Pabrik
+                    </button>
+                    <button onclick="saveSettings()" class="flex-1 md:flex-none px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl text-xs shadow-lg shadow-primary-500/20 transition-all">
+                        💾 Simpan Semua Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= MODAL: RECEIPT PREVIEW & TRANSACTION CONFIRMATION ================= -->
+    <div id="receipt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+            
+            <div class="bg-success text-white p-4 text-center space-y-1">
+                <span class="text-3xl">🎉</span>
+                <h3 class="font-bold text-base">Transaksi Berhasil!</h3>
+                <p class="text-[11px] opacity-90">Struk siap dicetak untuk pelanggan</p>
+            </div>
+
+            <!-- Scrollable Receipt Area -->
+            <div class="flex-1 overflow-y-auto p-4 bg-slate-50 border-y border-slate-100" id="receipt-print-area">
+                <!-- Thermal paper simulation -->
+                <div class="bg-white p-4 border border-dashed border-slate-300 rounded-md text-slate-800 text-xs font-mono space-y-3 shadow-sm mx-auto max-w-[80mm]">
+                    <div class="text-center space-y-1 border-b border-dashed border-slate-300 pb-2">
+                        <h4 class="font-bold text-sm tracking-wide">SABLONPRO CUSTOM</h4>
+                        <p class="text-[10px]">Jl. Tekno Ink No. 42, Indonesia</p>
+                        <p class="text-[10px]">WA: +62 812-3456-7890</p>
+                    </div>
+
+                    <div class="space-y-0.5 text-[10px]">
+                        <div class="flex justify-between">
+                            <span>No. Invoice:</span>
+                            <span id="rec-invoice-id" class="font-bold">#INV-0000000</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Kasir:</span>
+                            <span>Sistem Kasir Utama</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Tanggal:</span>
+                            <span id="rec-date">24-06-2026 12:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Pelanggan:</span>
+                            <span id="rec-customer" class="font-bold">Walk-in</span>
+                        </div>
+                    </div>
+
+                    <!-- Receipt items list -->
+                    <div class="border-t border-b border-dashed border-slate-300 py-2 space-y-1.5" id="rec-items-list">
+                        <!-- Programmatically generated items -->
+                    </div>
+
+                    <!-- Payment and receipt breakdown totals -->
+                    <div class="space-y-1 text-[10px]">
+                        <div class="flex justify-between">
+                            <span>Subtotal:</span>
+                            <span id="rec-subtotal">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-red-600">
+                            <span>Diskon:</span>
+                            <span id="rec-discount">- Rp 0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Pajak (PPN):</span>
+                            <span id="rec-tax">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-bold border-t border-slate-200 pt-1">
+                            <span>TOTAL:</span>
+                            <span id="rec-grandtotal">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between border-t border-dashed border-slate-200 pt-1">
+                            <span>Cara Bayar:</span>
+                            <span id="rec-payment-method" class="font-bold">TUNAI</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Bayar:</span>
+                            <span id="rec-cash-pay">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span>Kembalian:</span>
+                            <span id="rec-change">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-3 border-t border-dashed border-slate-300">
+                        <p class="font-bold text-[9px] uppercase">Terima Kasih Atas Pesanan Anda!</p>
+                        <p class="text-[8px] text-slate-500 mt-1">Estimasi pengerjaan sablon custom: 1 - 3 hari kerja.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="p-4 bg-white flex flex-col gap-2 no-print">
+                <button onclick="triggerPrintReceipt()" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary-500/10 transition-colors">
+                    🖨️ Cetak Fisik / Simpan PDF
+                </button>
+                <button onclick="closeReceiptModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2.5 rounded-xl text-xs transition-colors">
+                    Selesai & Transaksi Baru
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= JAVASCRIPT LOGIC AND APP STATE ================= -->
+    <script>
+        // DEFAULT DATA SETTINGS
+        const DEFAULT_GARMENT_PRICES = {
+            'combed_30s': { name: 'Cotton Combed 30s Pendek', price: 45000 },
+            'combed_30s_long': { name: 'Cotton Combed 30s Panjang', price: 55000 },
+            'hoodie': { name: 'Hoodie / Sweater Premium', price: 95000 },
+            'canvas_totebag': { name: 'Tote Bag Kanvas Tebal', price: 25000 }
+        };
+
+        const DEFAULT_PAPER_PRICES = {
+            'A3': { name: 'A3 (29.7 x 42 cm)', price: 35000 },
+            'A4': { name: 'A4 (21 x 29.7 cm)', price: 20000 },
+            'A5': { name: 'A5 (14.8 x 21 cm)', price: 12000 },
+            'A6': { name: 'A6 (10.5 x 14.8 cm) / Logo', price: 7000 }
+        };
+
+        const AVAILABLE_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+        const AVAILABLE_COLORS = [
+            { name: 'Hitam', hex: '#0f172a' },
+            { name: 'Putih', hex: '#f8fafc' },
+            { name: 'Merah Maroon', hex: '#7f1d1d' },
+            { name: 'Biru Navy', hex: '#1e3a8a' },
+            { name: 'Hijau Army', hex: '#14532d' },
+            { name: 'Abu-Abu Mist', hex: '#94a3b8' }
+        ];
+
+        // LOCAL STORAGE AND STATE LOAD
+        let garmentPrices = JSON.parse(localStorage.getItem('garmentPrices')) || DEFAULT_GARMENT_PRICES;
+        let paperPrices = JSON.parse(localStorage.getItem('paperPrices')) || DEFAULT_PAPER_PRICES;
+        let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory')) || [];
+
+        // ACTIVE POS STATE
+        let activeGarmentType = Object.keys(garmentPrices)[0];
+        let activeSize = 'M';
+        let activeColor = AVAILABLE_COLORS[0].name;
+        let activePaperSize = 'A3';
+        let activePrintSide = 'depan'; // 'depan', 'belakang', 'kedua'
+        let currentQty = 1;
+
+        let cart = [];
+        let selectedPaymentMethod = 'cash'; // 'cash', 'qris', 'transfer'
+
+        // ================= APP BOOTSTRAPPER =================
+        window.onload = function() {
+            initApp();
+            updateDashboardStats();
+        }
+
+        function initApp() {
+            renderGarmentOptions();
+            renderSizeButtons();
+            renderColorPills();
+            renderPaperSizes();
+            renderSettingsEditor();
+            calculateCurrentItemPrice();
+            updateCartUI();
+            setPrintSide('depan');
+            setPaymentMethod('cash');
+        }
+
+        function renderGarmentOptions() {
+            const selectEl = document.getElementById('input-garment-type');
+            selectEl.innerHTML = '';
+            for (let key in garmentPrices) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = `${garmentPrices[key].name} (Rp ${formatNumber(garmentPrices[key].price)})`;
+                selectEl.appendChild(opt);
+            }
+        }
+
+        function renderSizeButtons() {
+            const container = document.getElementById('size-selector-container');
+            container.innerHTML = '';
+            AVAILABLE_SIZES.forEach(sz => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => setShirtSize(sz);
+                btn.className = `size-btn-item border py-2 text-xs rounded-xl font-bold transition-all text-center ${
+                    activeSize === sz ? 'bg-primary-500 text-white border-primary-500 shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`;
+                btn.id = `sz-btn-${sz}`;
+                btn.textContent = sz;
+                container.appendChild(btn);
+            });
+        }
+
+        function renderColorPills() {
+            const container = document.getElementById('color-selector-container');
+            container.innerHTML = '';
+            AVAILABLE_COLORS.forEach(col => {
+                const isSelected = activeColor === col.name;
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.onclick = () => setShirtColor(col.name);
+                pill.className = `flex items-center space-x-2 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${
+                    isSelected ? 'bg-primary-50 border-primary-500 text-primary-700 ring-2 ring-primary-200' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-600'
+                }`;
+                
+                // Dot preview
+                const dot = document.createElement('span');
+                dot.className = "w-3.5 h-3.5 rounded-full border border-slate-300 shadow-sm";
+                dot.style.backgroundColor = col.hex;
+
+                const txt = document.createElement('span');
+                txt.textContent = col.name;
+
+                pill.appendChild(dot);
+                pill.appendChild(txt);
+                container.appendChild(pill);
+            });
+        }
+
+        function renderPaperSizes() {
+            const container = document.getElementById('paper-sizes-container');
+            container.innerHTML = '';
+            for (let key in paperPrices) {
+                const item = paperPrices[key];
+                const isSelected = activePaperSize === key;
+                
+                const card = document.createElement('div');
+                card.onclick = () => setPaperSize(key);
+                card.className = `p-3 rounded-xl border-2 cursor-pointer transition-all flex justify-between items-center ${
+                    isSelected ? 'border-primary-500 bg-primary-50/50 shadow-sm' : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg ${isSelected ? 'bg-primary-500 text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-xs">
+                            ${key}
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs text-slate-800">${item.name}</p>
+                            <p class="text-[10px] text-slate-400">Dimensi kertas sablon standar</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-xs text-primary-600 font-space">Rp ${formatNumber(item.price)}</span>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function setShirtSize(sz) {
+            activeSize = sz;
+            renderSizeButtons();
+            calculateCurrentItemPrice();
+        }
+
+        function setShirtColor(colName) {
+            activeColor = colName;
+            renderColorPills();
+        }
+
+        function setPaperSize(key) {
+            activePaperSize = key;
+            renderPaperSizes();
+            calculateCurrentItemPrice();
+        }
+
+        function setPrintSide(side) {
+            activePrintSide = side;
+            document.querySelectorAll('.btn-side').forEach(btn => {
+                btn.className = "btn-side py-3 px-2 border-2 bg-white text-slate-700 border-slate-200 rounded-xl text-center font-bold text-xs transition-all flex flex-col items-center gap-1";
+            });
+            
+            const activeBtn = document.getElementById(`btn-side-${side}`);
+            if (activeBtn) {
+                activeBtn.className = "btn-side py-3 px-2 border-2 bg-primary-50 text-primary-700 border-primary-500 rounded-xl text-center font-bold text-xs transition-all flex flex-col items-center gap-1 ring-2 ring-primary-100";
+            }
+            calculateCurrentItemPrice();
+        }
+
+        function changeCurrentQty(val) {
+            currentQty = Math.max(1, currentQty + val);
+            document.getElementById('current-qty').textContent = currentQty;
+            calculateCurrentItemPrice();
+        }
+
+        function setPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.pay-btn').forEach(btn => {
+                btn.className = "pay-btn py-2 border bg-white border-slate-200 text-slate-700 rounded-xl text-center text-xs font-bold flex flex-col items-center gap-1 transition-all";
+            });
+
+            const activeBtn = document.getElementById(`pay-btn-${method}`);
+            if (activeBtn) {
+                activeBtn.className = "pay-btn py-2 border bg-primary-500 border-primary-500 text-white rounded-xl text-center text-xs font-bold flex flex-col items-center gap-1 shadow-md transition-all";
+            }
+
+            const cashPanel = document.getElementById('cash-payment-panel');
+            if (method === 'cash') {
+                cashPanel.style.display = 'block';
+            } else {
+                cashPanel.style.display = 'none';
+                document.getElementById('input-cash-amount').value = '';
+                document.getElementById('payment-change').textContent = 'Rp 0';
+            }
+        }
+
+        function calculateCurrentItemPrice() {
+            activeGarmentType = document.getElementById('input-garment-type').value;
+            const shirtPrice = garmentPrices[activeGarmentType]?.price || 0;
+            const printPrice = paperPrices[activePaperSize]?.price || 0;
+            
+            // Side multiplication modifier
+            let designSubtotal = printPrice;
+            if (activePrintSide === 'kedua') {
+                // Front and Back printing gets a 100% additional printing fee (double the print cost)
+                designSubtotal = printPrice * 2;
+            }
+
+            const singleItemPrice = shirtPrice + designSubtotal;
+            const bulkPrice = singleItemPrice * currentQty;
+
+            document.getElementById('current-price-label').textContent = `Rp ${formatNumber(bulkPrice)}`;
+            document.getElementById('breakdown-price-label').textContent = `(${currentQty} x @ Rp ${formatNumber(singleItemPrice)})`;
+            
+            return {
+                shirtPrice,
+                printPrice: designSubtotal,
+                singleItemPrice,
+                bulkPrice
+            };
+        }
+
+        function addToCart() {
+            const prices = calculateCurrentItemPrice();
+            const noteInput = document.getElementById('input-design-note');
+            
+            const newItem = {
+                id: 'item-' + Date.now(),
+                garmentKey: activeGarmentType,
+                garmentName: garmentPrices[activeGarmentType].name,
+                shirtPrice: prices.shirtPrice,
+                printPrice: prices.printPrice,
+                size: activeSize,
+                color: activeColor,
+                paperSize: activePaperSize,
+                printSide: activePrintSide,
+                qty: currentQty,
+                unitPrice: prices.singleItemPrice,
+                totalPrice: prices.bulkPrice,
+                note: noteInput.value.trim() || 'Custom Print'
+            };
+
+            cart.push(newItem);
+            showToast(`Kaos ${activeSize} berhasil ditambahkan!`, 'success');
+
+            // Reset note and qty fields
+            noteInput.value = '';
+            currentQty = 1;
+            document.getElementById('current-qty').textContent = '1';
+
+            updateCartUI();
+            calculateCurrentItemPrice();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-list');
+            const emptyState = document.getElementById('cart-empty-state');
+            const counter = document.getElementById('cart-counter');
+
+            // Clear previous listing
+            const items = container.querySelectorAll('.cart-item-row');
+            items.forEach(el => el.remove());
+
+            if (cart.length === 0) {
+                emptyState.style.display = 'block';
+                counter.textContent = "0 Item";
+            } else {
+                emptyState.style.display = 'none';
+                counter.textContent = `${cart.length} Model`;
+
+                cart.forEach((item, index) => {
+                    const row = document.createElement('div');
+                    row.className = "cart-item-row bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2.5 relative hover:border-slate-300 transition-colors";
+                    
+                    let sideBadge = 'Depan';
+                    if (item.printSide === 'belakang') sideBadge = 'Belakang';
+                    if (item.printSide === 'kedua') sideBadge = 'Depan+Blk';
+
+                    row.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">${item.garmentName}</h4>
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    <span class="bg-slate-200 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded">Siz: ${item.size}</span>
+                                    <span class="bg-slate-200 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded">Warna: ${item.color}</span>
+                                    <span class="bg-primary-100 text-primary-700 text-[9px] font-bold px-1.5 py-0.5 rounded">Sablon: ${item.paperSize}</span>
+                                    <span class="bg-purple-100 text-purple-700 text-[9px] font-bold px-1.5 py-0.5 rounded">Posisi: ${sideBadge}</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1 italic font-medium">✏️ ${item.note}</p>
+                            </div>
+                            <button onclick="removeFromCart('${item.id}')" class="text-slate-400 hover:text-red-500 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-200/50">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="modifyCartQty('${item.id}', -1)" class="w-6 h-6 rounded bg-slate-200 hover:bg-slate-300 text-xs font-bold flex items-center justify-center">-</button>
+                                <span class="text-xs font-bold font-space">${item.qty}</span>
+                                <button onclick="modifyCartQty('${item.id}', 1)" class="w-6 h-6 rounded bg-slate-200 hover:bg-slate-300 text-xs font-bold flex items-center justify-center">+</button>
+                            </div>
+                            <span class="font-bold text-xs text-slate-800 font-space">Rp ${formatNumber(item.totalPrice)}</span>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+            calculateCartTotals();
+        }
+
+        function modifyCartQty(id, modifier) {
+            const item = cart.find(x => x.id === id);
+            if (item) {
+                item.qty = Math.max(1, item.qty + modifier);
+                item.totalPrice = item.unitPrice * item.qty;
+                updateCartUI();
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(x => x.id !== id);
+            showToast("Item dihapus dari keranjang.", "success");
+            updateCartUI();
+        }
+
+        function clearCart() {
+            if (cart.length === 0) return;
+            cart = [];
+            showToast("Keranjang dibersihkan.", "success");
+            updateCartUI();
+        }
+
+        function calculateCartTotals() {
+            const subtotal = cart.reduce((acc, item) => acc + item.totalPrice, 0);
+            
+            // Discount Nominal
+            const discPercent = parseFloat(document.getElementById('input-discount').value) || 0;
+            const discountVal = (discPercent / 100) * subtotal;
+
+            // Tax Nominal
+            const taxPercent = parseFloat(document.getElementById('input-tax').value) || 0;
+            const afterDiscount = subtotal - discountVal;
+            const taxVal = (taxPercent / 100) * afterDiscount;
+
+            const grandtotal = afterDiscount + taxVal;
+
+            document.getElementById('cart-subtotal').textContent = `Rp ${formatNumber(subtotal)}`;
+            document.getElementById('cart-discount-val').textContent = `- Rp ${formatNumber(discountVal)}`;
+            document.getElementById('cart-tax-val').textContent = `Rp ${formatNumber(taxVal)}`;
+            document.getElementById('cart-grandtotal').textContent = `Rp ${formatNumber(grandtotal)}`;
+
+            calculateChange();
+        }
+
+        function quickCash(amount) {
+            document.getElementById('input-cash-amount').value = amount;
+            calculateChange();
+        }
+
+        function calculateChange() {
+            const grandTotalText = document.getElementById('cart-grandtotal').textContent;
+            const grandtotal = parseCurrency(grandTotalText);
+            const cashAmount = parseFloat(document.getElementById('input-cash-amount').value) || 0;
+
+            if (selectedPaymentMethod === 'cash' && cashAmount > 0) {
+                const change = cashAmount - grandtotal;
+                const changeEl = document.getElementById('payment-change');
+                if (change < 0) {
+                    changeEl.textContent = `Kurang Rp ${formatNumber(Math.abs(change))}`;
+                    changeEl.classList.remove('text-primary-600');
+                    changeEl.classList.add('text-danger');
+                } else {
+                    changeEl.textContent = `Rp ${formatNumber(change)}`;
+                    changeEl.classList.remove('text-danger');
+                    changeEl.classList.add('text-primary-600');
+                }
+            } else {
+                document.getElementById('payment-change').textContent = 'Rp 0';
+            }
+        }
+
+        function processTransaction() {
+            if (cart.length === 0) {
+                showToast("Keranjang masih kosong!", "error");
+                return;
+            }
+
+            const grandTotalText = document.getElementById('cart-grandtotal').textContent;
+            const grandtotal = parseCurrency(grandTotalText);
+            const cashAmount = parseFloat(document.getElementById('input-cash-amount').value) || 0;
+
+            if (selectedPaymentMethod === 'cash') {
+                if (cashAmount === 0) {
+                    showToast("Harap masukkan uang tunai!", "error");
+                    return;
+                }
+                if (cashAmount < grandtotal) {
+                    showToast("Uang tunai kurang dari nominal tagihan!", "error");
+                    return;
+                }
+            }
+
+            // Create Transaction Record
+            const invoiceId = 'INV-' + Date.now().toString().substring(5);
+            const customerName = document.getElementById('input-customer-name').value.trim() || 'Walk-in Customer';
+            const customerPhone = document.getElementById('input-customer-phone').value.trim() || '-';
+            const transactionDate = getFormattedDate();
+
+            const discountPercent = parseFloat(document.getElementById('input-discount').value) || 0;
+            const taxPercent = parseFloat(document.getElementById('input-tax').value) || 0;
+
+            const transaction = {
+                id: invoiceId,
+                date: transactionDate,
+                customer: customerName,
+                phone: customerPhone,
+                items: [...cart],
+                subtotal: cart.reduce((acc, i) => acc + i.totalPrice, 0),
+                discountPercent,
+                taxPercent,
+                grandtotal,
+                paymentMethod: selectedPaymentMethod,
+                cashPaid: selectedPaymentMethod === 'cash' ? cashAmount : grandtotal,
+                change: selectedPaymentMethod === 'cash' ? (cashAmount - grandtotal) : 0
+            };
+
+            // Save to Local Storage
+            transactionHistory.unshift(transaction);
+            localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+
+            // Populate & Trigger Receipt Modal
+            populateReceiptModal(transaction);
+            updateDashboardStats();
+            renderHistoryTable();
+        }
+
+        function populateReceiptModal(tx) {
+            document.getElementById('rec-invoice-id').textContent = `#${tx.id}`;
+            document.getElementById('rec-date').textContent = tx.date;
+            document.getElementById('rec-customer').textContent = `${tx.customer} (${tx.phone})`;
+            
+            const listContainer = document.getElementById('rec-items-list');
+            listContainer.innerHTML = '';
+
+            tx.items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "space-y-0.5 text-[10px]";
+                
+                let detailText = `${item.size} - ${item.color} | Sablon ${item.paperSize}`;
+                if (item.printSide === 'kedua') detailText += ' (2 Sisi)';
+                if (item.note) detailText += ` (${item.note})`;
+
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between font-bold">
+                        <span>${item.garmentName} (x${item.qty})</span>
+                        <span>Rp ${formatNumber(item.totalPrice)}</span>
+                    </div>
+                    <div class="text-slate-500 flex justify-between">
+                        <span>${detailText}</span>
+                        <span>@Rp ${formatNumber(item.unitPrice)}</span>
+                    </div>
+                `;
+                listContainer.appendChild(itemDiv);
+            });
+
+            const discountAmt = (tx.discountPercent / 100) * tx.subtotal;
+            const taxAmt = (tx.taxPercent / 100) * (tx.subtotal - discountAmt);
+
+            document.getElementById('rec-subtotal').textContent = `Rp ${formatNumber(tx.subtotal)}`;
+            document.getElementById('rec-discount').textContent = `- Rp ${formatNumber(discountAmt)}`;
+            document.getElementById('rec-tax').textContent = `Rp ${formatNumber(taxAmt)}`;
+            document.getElementById('rec-grandtotal').textContent = `Rp ${formatNumber(tx.grandtotal)}`;
+            document.getElementById('rec-payment-method').textContent = tx.paymentMethod.toUpperCase();
+            document.getElementById('rec-cash-pay').textContent = `Rp ${formatNumber(tx.cashPaid)}`;
+            document.getElementById('rec-change').textContent = `Rp ${formatNumber(tx.change)}`;
+
+            // Unhide Modal
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function triggerPrintReceipt() {
+            window.print();
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+            // Clear current cart session and customer fields
+            cart = [];
+            document.getElementById('input-customer-name').value = '';
+            document.getElementById('input-customer-phone').value = '';
+            document.getElementById('input-cash-amount').value = '';
+            document.getElementById('input-discount').value = '0';
+            document.getElementById('payment-change').textContent = 'Rp 0';
+            updateCartUI();
+            showToast("Siap untuk transaksi baru!", "success");
+        }
+
+        function renderHistoryTable() {
+            const tableBody = document.getElementById('history-table-body');
+            const emptyState = document.getElementById('history-empty');
+            tableBody.innerHTML = '';
+
+            if (transactionHistory.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            transactionHistory.forEach(tx => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-50 text-xs text-slate-700 transition-colors";
+
+                let itemsBrief = tx.items.map(i => `${i.garmentName} [${i.size}] (${i.qty} Pcs - Sablon ${i.paperSize})`).join('<br>');
+
+                const discAmt = (tx.discountPercent / 100) * tx.subtotal;
+                const taxAmt = (tx.taxPercent / 100) * (tx.subtotal - discAmt);
+
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-primary-600">#${tx.id}</td>
+                    <td class="p-4 font-medium">${tx.date}</td>
+                    <td class="p-4">
+                        <p class="font-bold text-slate-800">${tx.customer}</p>
+                        <p class="text-[10px] text-slate-400">Telp: ${tx.phone}</p>
+                    </td>
+                    <td class="p-4 max-w-[280px] break-words text-[11px] leading-relaxed font-medium">${itemsBrief}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-[10px] font-bold ${
+                            tx.paymentMethod === 'cash' ? 'bg-emerald-100 text-emerald-800' :
+                            tx.paymentMethod === 'qris' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-800'
+                        }">${tx.paymentMethod.toUpperCase()}</span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <p class="text-[10px] text-slate-400">Disc: ${tx.discountPercent}%</p>
+                        <p class="text-[10px] text-slate-400">Pajak: ${tx.taxPercent}%</p>
+                    </td>
+                    <td class="p-4 text-right font-black font-space text-slate-800 text-sm">Rp ${formatNumber(tx.grandtotal)}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="reprintReceipt('${tx.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-[10px] transition-colors">
+                            🔍 Lihat Struk
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function reprintReceipt(id) {
+            const tx = transactionHistory.find(x => x.id === id);
+            if (tx) {
+                populateReceiptModal(tx);
+            }
+        }
+
+        function clearHistory() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua data riwayat transaksi? Tindakan ini permanen.")) {
+                transactionHistory = [];
+                localStorage.removeItem('transactionHistory');
+                renderHistoryTable();
+                updateDashboardStats();
+                showToast("Semua riwayat transaksi berhasil dihapus.", "success");
+            }
+        }
+
+        function updateDashboardStats() {
+            const todayStr = getFormattedDate().split(' ')[0]; // Matches Date Part
+            let totalRevenue = 0;
+            let totalPcs = 0;
+            let transactionsCount = 0;
+
+            transactionHistory.forEach(tx => {
+                totalRevenue += tx.grandtotal;
+                transactionsCount++;
+                tx.items.forEach(item => {
+                    totalPcs += item.qty;
+                });
+            });
+
+            document.getElementById('stat-revenue').textContent = `Rp ${formatNumber(totalRevenue)}`;
+            document.getElementById('stat-sold').textContent = `${totalPcs} Pcs`;
+            document.getElementById('stat-transactions').textContent = transactionsCount;
+        }
+
+        function renderSettingsEditor() {
+            const garmentContainer = document.getElementById('settings-garments-list');
+            garmentContainer.innerHTML = '';
+            for (let key in garmentPrices) {
+                const item = garmentPrices[key];
+                const div = document.createElement('div');
+                div.className = "space-y-1";
+                div.innerHTML = `
+                    <label class="block text-xs font-semibold text-slate-500">${item.name}</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2 text-slate-400 font-bold text-xs">Rp</span>
+                        <input type="number" id="setting-garment-${key}" value="${item.price}" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-1.5 text-xs font-bold font-space text-slate-700 outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                `;
+                garmentContainer.appendChild(div);
+            }
+
+            const paperContainer = document.getElementById('settings-paper-list');
+            paperContainer.innerHTML = '';
+            for (let key in paperPrices) {
+                const item = paperPrices[key];
+                const div = document.createElement('div');
+                div.className = "space-y-1";
+                div.innerHTML = `
+                    <label class="block text-xs font-semibold text-slate-500">${item.name}</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2 text-slate-400 font-bold text-xs">Rp</span>
+                        <input type="number" id="setting-paper-${key}" value="${item.price}" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-1.5 text-xs font-bold font-space text-slate-700 outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                `;
+                paperContainer.appendChild(div);
+            }
+        }
+
+        function saveSettings() {
+            for (let key in garmentPrices) {
+                const inputVal = document.getElementById(`setting-garment-${key}`).value;
+                garmentPrices[key].price = parseFloat(inputVal) || 0;
+            }
+            for (let key in paperPrices) {
+                const inputVal = document.getElementById(`setting-paper-${key}`).value;
+                paperPrices[key].price = parseFloat(inputVal) || 0;
+            }
+
+            localStorage.setItem('garmentPrices', JSON.stringify(garmentPrices));
+            localStorage.setItem('paperPrices', JSON.stringify(paperPrices));
+            
+            showToast("Semua harga berhasil diperbarui & disimpan!", "success");
+            initApp(); // Redraw selectors
+        }
+
+        function resetSettingsToDefault() {
+            if (confirm("Reset ulang semua konfigurasi harga ke setelan pabrik default?")) {
+                garmentPrices = {...DEFAULT_GARMENT_PRICES};
+                paperPrices = {...DEFAULT_PAPER_PRICES};
+                localStorage.setItem('garmentPrices', JSON.stringify(garmentPrices));
+                localStorage.setItem('paperPrices', JSON.stringify(paperPrices));
+                showToast("Setelan harga direset ke awal.", "success");
+                initApp();
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all";
+            });
+
+            // Set active states
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn active px-4 py-2 rounded-lg text-sm font-semibold bg-primary-600 text-white flex items-center gap-2 transition-all shadow-md";
+            }
+
+            // Show sections
+            document.getElementById('section-pos').classList.add('hidden');
+            document.getElementById('section-history').classList.add('hidden');
+            document.getElementById('section-settings').classList.add('hidden');
+
+            if (tabId === 'pos') {
+                document.getElementById('section-pos').classList.remove('hidden');
+            } else if (tabId === 'history') {
+                document.getElementById('section-history').classList.remove('hidden');
+                renderHistoryTable();
+            } else if (tabId === 'settings') {
+                document.getElementById('section-settings').classList.remove('hidden');
+                renderSettingsEditor();
+            }
+        }
+
+        // Helper Utilities
+        function formatNumber(num) {
+            return new Intl.NumberFormat('id-ID').format(num);
+        }
+
+        function parseCurrency(formattedStr) {
+            // Strip Rp and any spacing, dot delimiters to pure float
+            return parseFloat(formattedStr.replace(/[^0-9]/g, '')) || 0;
+        }
+
+        function getFormattedDate() {
+            const d = new Date();
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-box');
+            const text = document.getElementById('toast-text');
+            const icon = document.getElementById('toast-icon');
+
+            text.textContent = message;
+            if (type === 'success') {
+                icon.textContent = "✔";
+                icon.className = "text-success font-bold";
+            } else {
+                icon.textContent = "✕";
+                icon.className = "text-danger font-bold";
+            }
+
+            // Pull Down
+            toast.className = "fixed top-5 right-5 z-50 transform translate-y-0 transition-all duration-300 pointer-events-auto";
+            
+            setTimeout(() => {
+                toast.className = "fixed top-5 right-5 z-50 transform translate-y-[-150%] transition-all duration-300 pointer-events-none";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
